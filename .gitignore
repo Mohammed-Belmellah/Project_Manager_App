@@ -1,0 +1,18 @@
+# --- Frontend (Angular) ---
+node_modules/
+dist/
+.angular/
+*.log
+
+# --- Backend (Java/Spring) ---
+target/
+*.class
+.mvn/
+*.jar
+*.war
+
+# --- IDE Settings (Optional but recommended) ---
+.idea/
+.vscode/
+*.swp
+.DS_Store
