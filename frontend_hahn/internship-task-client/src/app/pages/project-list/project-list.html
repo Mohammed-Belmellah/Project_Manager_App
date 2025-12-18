@@ -1,0 +1,43 @@
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Projects</h2>
+    <button class="btn btn-success" routerLink="/create-project">+ New Project</button>
+  </div>
+
+  @if (projects.length === 0) {
+    <div class="text-center text-muted">
+      <p>No projects found. Create one to get started!</p>
+    </div>
+  }
+
+  <div class="row">
+    @for (project of projects; track project.id) {
+      <div class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ project.title }}</h5>
+            <p class="card-text text-muted">{{ project.description }}</p>
+            
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div class="d-flex gap-2">
+                <span class="badge" 
+                      [class.bg-primary]="project.progressPercentage < 100"
+                      [class.bg-success]="project.progressPercentage === 100">
+                  {{ project.progressPercentage | number:'1.0-0' }}% Done
+                </span>
+
+                <span class="badge bg-light text-dark border">
+                  {{ project.totalTasks }} Tasks
+                </span>
+              </div>
+              
+              <button class="btn btn-outline-secondary btn-sm" [routerLink]="['/projects', project.id]">
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
