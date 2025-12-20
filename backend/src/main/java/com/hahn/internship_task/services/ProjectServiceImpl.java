@@ -105,7 +105,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     public void deleteTask(UUID taskId) {
         if (!taskRepository.existsById(taskId)) {
-            throw new RuntimeException("Task not found"); // Or specific exception
+            throw new RuntimeException("Task not found");
         }
         taskRepository.deleteById(taskId);
     }
@@ -126,7 +126,7 @@ public class ProjectServiceImpl implements ProjectService {
         dto.setDescription(project.getDescription());
         dto.setCreatedAt(project.getCreatedAt());
 
-        // REQUIREMENT: Calculate Progress
+
         List<Task> tasks = project.getTasks();
         int total = tasks.size();
         int completed = (int) tasks.stream().filter(Task::isCompleted).count();

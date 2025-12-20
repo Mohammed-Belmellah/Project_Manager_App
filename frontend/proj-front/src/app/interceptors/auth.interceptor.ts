@@ -16,8 +16,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      
-      // 🛑 FIXED: Check for 401 OR 403
       if (error.status === 401 || error.status === 403) {
         console.log('Token invalid (401/403)! Attempting silent refresh...');
 

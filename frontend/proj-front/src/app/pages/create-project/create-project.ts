@@ -11,10 +11,9 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './create-project.html',
   styleUrl: './create-project.css'
 })
-export class CreateProjectComponent { // <--- Notice the class name is CreateProjectComponent
+export class CreateProjectComponent {
   http = inject(HttpClient);
   router = inject(Router);
-
   title = '';
   description = '';
   apiUrl = 'http://localhost:8083/api/projects';

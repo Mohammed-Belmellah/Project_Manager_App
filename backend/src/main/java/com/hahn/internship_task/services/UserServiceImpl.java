@@ -16,7 +16,7 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // Requires SecurityConfig
+    private final PasswordEncoder passwordEncoder; 
 
     public UserDTO registerUser(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {

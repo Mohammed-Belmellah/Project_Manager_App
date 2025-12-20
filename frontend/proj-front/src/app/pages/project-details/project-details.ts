@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 export class ProjectDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private http = inject(HttpClient);
-  private cd = inject(ChangeDetectorRef); // <--- Inject it here
+  private cd = inject(ChangeDetectorRef);
 
   project: any = null;
   tasks: any[] = [];
@@ -41,7 +41,7 @@ export class ProjectDetailsComponent implements OnInit {
     this.http.get(`${this.apiUrl}/${this.projectId}`).subscribe({
       next: (data) => {
         this.project = data;
-        this.cd.detectChanges(); // <--- FORCE UPDATE HERE
+        this.cd.detectChanges();
       },
       error: (err) => console.error('Error loading project', err)
     });
@@ -50,11 +50,7 @@ export class ProjectDetailsComponent implements OnInit {
   loadTasks() {
     this.http.get<any[]>(`${this.apiUrl}/${this.projectId}/tasks`).subscribe({
       next: (data) => {
-        // 🛑 FIX: Sort the tasks so they don't jump around
-        // Here we sort by ID (Creation Order). 
-        // You could also sort by 'dueDate' if you prefer.
         this.tasks = data.sort((a, b) => {
-          // Compare IDs (strings or numbers) to keep creation order
           return a.id > b.id ? 1 : -1;
         });
         
@@ -65,7 +61,6 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   addTask() {
-    // Basic validation
     if (!this.newTaskTitle.trim()) {
       alert("Title is required");
       return;
@@ -74,20 +69,16 @@ export class ProjectDetailsComponent implements OnInit {
       alert("Due Date is required");
       return;
     }
-
-    // 2. UPDATED: Use the real values from the form
     const task = {
       title: this.newTaskTitle,
-      description: this.newTaskDescription || 'No description provided', // Fallback if empty
-      dueDate: this.newTaskDueDate, // The input type="date" gives "YYYY-MM-DD" automatically
+      description: this.newTaskDescription || 'No description provided',
+      dueDate: this.newTaskDueDate, 
       completed: this.newTaskStatus 
     };
 
     this.http.post(`${this.apiUrl}/${this.projectId}/tasks`, task).subscribe({
       next: (res) => {
         this.tasks.push(res);
-        
-        // 3. UPDATED: Reset the entire form
         this.newTaskTitle = '';
         this.newTaskDescription = '';
         this.newTaskDueDate = '';
@@ -95,8 +86,8 @@ export class ProjectDetailsComponent implements OnInit {
 
         this.showTaskForm = false;
         
-        this.loadProject(); // Update progress bar
-        this.cd.detectChanges(); // Force screen update
+        this.loadProject(); 
+        this.cd.detectChanges(); 
       },
       error: (err) => alert('Failed to add task')
     });
@@ -109,20 +100,12 @@ export class ProjectDetailsComponent implements OnInit {
       params: { completed: updatedStatus }
     }).subscribe({
       next: () => {
-        // 1. Update Locally (Instant feedback, no jumping)
         task.completed = updatedStatus;
-        
-        // 2. Only refresh the Progress Bar
         this.loadProject(); 
-        
-        // 3. Update Screen
         this.cd.detectChanges();
-        
-        // 🛑 DO NOT call this.loadTasks() here!
       },
       error: (err) => {
         alert('Update failed');
-        // Revert on error
         task.completed = !updatedStatus; 
       }
     });
@@ -134,8 +117,8 @@ export class ProjectDetailsComponent implements OnInit {
     this.http.delete(`${this.apiUrl}/tasks/${taskId}`).subscribe({
       next: () => {
         this.tasks = this.tasks.filter(t => t.id !== taskId); 
-        this.loadProject(); // Refresh progress bar
-        this.cd.detectChanges(); // <--- AND HERE
+        this.loadProject();
+        this.cd.detectChanges();
       },
       error: (err) => alert('Error deleting task')
     });
