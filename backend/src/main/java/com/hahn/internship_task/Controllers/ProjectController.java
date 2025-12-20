@@ -24,7 +24,7 @@ public class ProjectController {
     private final ProjectService projectService;
     private final UserRepository userRepository;
 
-    // Get all projects for a specific user (Pass userId as param for now)
+
     @GetMapping
     public ResponseEntity<List<ProjectDTO>> getUserProjects(Authentication authentication) {
         String email = authentication.getName();
@@ -34,12 +34,9 @@ public class ProjectController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProjectDTO> getProject(@PathVariable UUID id, Authentication authentication) {
-        // 1. Get the current user
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // 2. Pass the User ID to the service so we can check ownership
         return ResponseEntity.ok(projectService.getProjectByIdAndUser(id, user.getId()));
     }
 
@@ -69,7 +66,6 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getTasksByProjectId(projectId));
     }
 
-    // 2. Delete a task
     @DeleteMapping("/tasks/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable UUID taskId) {
         projectService.deleteTask(taskId);

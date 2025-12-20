@@ -18,7 +18,6 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // Matches the key in your application.properties
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
 
@@ -41,12 +40,10 @@ public class JwtService {
         return buildToken(new HashMap<>(), userDetails, jwtExpiration);
     }
 
-    // 2. Add this NEW method for Refresh Tokens
     public String generateRefreshToken(UserDetails userDetails) {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
-    // 3. Helper method to avoid code duplication
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
         return Jwts.builder()
                 .setClaims(extraClaims)

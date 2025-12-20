@@ -33,23 +33,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
 
-        // 1. Check if token exists
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7); // Remove "Bearer " prefix
+        jwt = authHeader.substring(7);
 
-        // --- SAFE ZONE START ---
         try {
-            userEmail = jwtService.extractUsername(jwt); // This line used to crash!
-
-            // 2. If user is not authenticated yet
+            userEmail = jwtService.extractUsername(jwt);
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
-                // 3. Validate token
                 if (jwtService.isTokenValid(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
@@ -57,18 +51,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             userDetails.getAuthorities()
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                    // 4. Set the user in the SecurityContext (Log them in)
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
         } catch (Exception e) {
-            // If the token is expired or invalid, we catch the error here.
-            // We print a warning, but we DO NOT crash.
             System.out.println("Warning: Invalid or Expired JWT Token - " + e.getMessage());
         }
-        // --- SAFE ZONE END ---
-
         filterChain.doFilter(request, response);
     }
 }

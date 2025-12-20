@@ -34,36 +34,24 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        // 1. Check credentials
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-
-        // 2. Generate Tokens
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         var accessToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
-
-        // 3. Return both
         UserDTO userDto = new UserDTO(user.getId(), user.getFullName(), user.getEmail());
         return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken, userDto));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@RequestBody RefreshTokenRequest request) {
-        // 1. Extract email from Refresh Token
         String email = jwtService.extractUsername(request.getToken());
 
         if (email != null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
-
-            // 2. Check if Refresh Token is valid (not expired)
             if (jwtService.isTokenValid(request.getToken(), userDetails)) {
-
-                // 3. Generate NEW Access Token
                 String newAccessToken = jwtService.generateToken(userDetails);
-
-                // 4. Return New Access Token + Old Refresh Token
                 return ResponseEntity.ok(new AuthResponse(
                         newAccessToken,
                         request.getToken(),
